@@ -10,15 +10,15 @@ import tensorflow_addons as tfa
 # %%
 # Parameters
 DATASET_PATH = "data"  # path to extracted http://awe.fri.uni-lj.si/downloads/AWEDataset.zip
-BATCH_SIZE = 10
+BATCH_SIZE = 64
 SHUFFLE_SIZE = 500
 IMAGE_W = 128
 IMAGE_H = 128
 IMAGE_C = 3
-GROUP_NORM = 16
+N_LABELS = 100
 EPOCHS = 35
 EXP_ID = "initial"  # subfolder inside `out/` with saved weights
-TRAIN = False  # `True` = train, `False` = load saved checkpoints
+TRAIN = True  # `True` = train, `False` = load saved checkpoints
 OUT_DIR = os.path.join("out", EXP_ID)
 
 # %%
@@ -66,5 +66,40 @@ for dataset, ds in datasets.items():
 ds_train = datasets['train'].take(500).cache().shuffle(SHUFFLE_SIZE).batch(BATCH_SIZE)
 ds_val = datasets['train'].skip(500).cache().batch(BATCH_SIZE)
 ds_test = datasets['test'].cache().batch(BATCH_SIZE)
+
+# %%
+# Load (or download) EfficientNet-B0.
+efficientnet_b0 = tf.keras.applications.EfficientNetB0(
+    include_top=False, input_shape=(IMAGE_H, IMAGE_W, IMAGE_C))
+efficientnet_b0.trainable = False
+
+# %%
+# Construct CNN model.
+x = inputs = tf.keras.layers.Input(shape=[IMAGE_H, IMAGE_W, IMAGE_C])
+x = efficientnet_b0(x)
+x = tf.keras.layers.Dense(N_LABELS, activation=tf.nn.softmax)(x)
+model = tf.keras.Model(inputs=inputs, outputs=x)
+
+# %%
+# Create callback which will save checkpoints during training.
+cp_callback = tf.keras.callbacks.ModelCheckpoint(
+    filepath=os.path.join(OUT_DIR, 'train-{epoch:04d}.ckpt'),
+    save_weights_only=True,
+    verbose=1
+)
+
+# %%
+# Train.
+model.compile(
+    optimizer=tf.optimizers.Adam(),
+    loss=tf.losses.SparseCategoricalCrossentropy(),
+    metrics=[tf.metrics.SparseCategoricalAccuracy(name="accuracy")]
+)
+train_history = model.fit(
+    ds_train,
+    epochs=EPOCHS,
+    validation_data=ds_val,
+    callbacks=[cp_callback]
+)
 
 # %%
