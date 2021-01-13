@@ -1,6 +1,6 @@
 # %%
 import os
-import json
+import shutil
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -20,6 +20,10 @@ EPOCHS = 35
 EXP_ID = "initial"  # subfolder inside `out/` with saved weights
 TRAIN = True  # `True` = train, `False` = load saved checkpoints
 OUT_DIR = os.path.join("out", EXP_ID)
+
+# %%
+# Copy this file to output directory.
+shutil.copyfile(__file__, os.path.join(OUT_DIR, os.path.basename(__file__)))
 
 # %%
 # Load image paths.
