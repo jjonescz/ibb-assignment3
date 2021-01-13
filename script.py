@@ -31,7 +31,7 @@ for dataset in ['train', 'test']:
     filenames = translations[rows]['AWE image path']
     paths = map(lambda f: os.path.join(DATASET_PATH, f), filenames)
     images[dataset] = list(paths)
-    labels[dataset] = list(translations[rows]['Subject ID'])
+    labels[dataset] = list(translations[rows]['Subject ID'] - 1)
 
 # %%
 # Load images as Tensorflow Datasets.
