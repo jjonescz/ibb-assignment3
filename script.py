@@ -77,6 +77,7 @@ efficientnet_b0.trainable = False
 # Construct CNN model.
 x = inputs = tf.keras.layers.Input(shape=[IMAGE_H, IMAGE_W, IMAGE_C])
 x = efficientnet_b0(x)
+x = tf.keras.layers.GlobalMaxPool2D()(x)
 x = tf.keras.layers.Dense(N_LABELS, activation=tf.nn.softmax)(x)
 model = tf.keras.Model(inputs=inputs, outputs=x)
 
