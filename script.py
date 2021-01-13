@@ -12,8 +12,8 @@ import tensorflow_addons as tfa
 DATASET_PATH = "data"  # path to extracted http://awe.fri.uni-lj.si/downloads/AWEDataset.zip
 BATCH_SIZE = 10
 SHUFFLE_SIZE = 500
-IMAGE_W = 480
-IMAGE_H = 352  # divisible by 32
+IMAGE_W = 128
+IMAGE_H = 128
 IMAGE_C = 3
 GROUP_NORM = 16
 EPOCHS = 35
@@ -52,6 +52,14 @@ image_shapes = np.array([image.shape for image, _ in datasets['train']])
 print(f'Min image size: {image_shapes.min(axis=0)}')
 print(f'Max image size: {image_shapes.max(axis=0)}')
 print(f'Avg image size: {image_shapes.mean(axis=0)}')
+
+# %%
+# Resize images.
+for dataset, ds in datasets.items():
+    def transform(image, label):
+        image = tf.image.resize(image, (IMAGE_H, IMAGE_W))
+        return image, label
+    datasets[dataset] = ds.map(transform)
 
 # %%
 # Split into training, validation and testing datasets.
