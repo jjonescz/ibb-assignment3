@@ -75,6 +75,18 @@ ds_val = ds_train_shuffled.skip(500).cache().batch(BATCH_SIZE)
 ds_test = datasets['test'].cache().batch(BATCH_SIZE)
 
 # %%
+# # Plot class distribution.
+# def plot_class_distribution(ds, name):
+#     labels = [label.numpy() for _, label in ds.unbatch()]
+#     plt.hist(labels, bins=N_LABELS)
+#     plt.title(f'Class distribution in {name} data')
+#     plt.show()
+# plot_class_distribution(ds_train_shuffled.batch(BATCH_SIZE), 'original train')
+# plot_class_distribution(ds_train, 'train')
+# plot_class_distribution(ds_val, 'validation')
+# plot_class_distribution(ds_test, 'test')
+
+# %%
 # Load (or download) EfficientNet-B0.
 efficientnet_b0 = tf.keras.applications.EfficientNetB0(
     include_top=False, input_shape=(IMAGE_H, IMAGE_W, IMAGE_C))
