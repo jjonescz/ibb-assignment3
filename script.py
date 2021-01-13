@@ -87,6 +87,7 @@ model = tf.keras.Model(inputs=inputs, outputs=x)
 cp_callback = tf.keras.callbacks.ModelCheckpoint(
     filepath=os.path.join(OUT_DIR, 'train-{epoch:04d}.ckpt'),
     save_freq=5 * len(ds_train),  # save every 5th epoch
+    save_weights_only=True,
     verbose=1
 )
 
