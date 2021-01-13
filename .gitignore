@@ -1,2 +1,5 @@
 # AWE Dataset
 /data/
+
+# Training state
+/out/
