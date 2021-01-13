@@ -12,9 +12,9 @@ import tensorflow_addons as tfa
 DATASET_PATH = "data"  # path to extracted http://awe.fri.uni-lj.si/downloads/AWEDataset.zip
 BATCH_SIZE = 10
 SHUFFLE_SIZE = 500
-AWE_W = 480
-AWE_H = 352  # divisible by 32
-AWE_C = 3
+IMAGE_W = 480
+IMAGE_H = 352  # divisible by 32
+IMAGE_C = 3
 GROUP_NORM = 16
 EPOCHS = 35
 EXP_ID = "initial"  # subfolder inside `out/` with saved weights
@@ -30,5 +30,18 @@ for dataset in ['train', 'test']:
     rows = translations['AWE-Full image path'].str.startswith(dataset)
     images[dataset] = list(translations[rows]['AWE image path'])
     labels[dataset] = list(translations[rows]['Subject ID'])
+
+# %%
+# Load images as Tensorflow Datasets.
+datasets = dict()
+for dataset in ['train', 'test']:
+    def transform(image, label):
+        # Load image from given path.
+        image = tf.io.read_file(image)
+        image = tf.io.decode_png(image, channels=IMAGE_C)
+        return image, label
+
+    ds = tf.data.Dataset.from_tensor_slices((images[dataset], labels[dataset]))
+    datasets[dataset] = ds.map(transform)
 
 # %%
