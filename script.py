@@ -17,9 +17,9 @@ IMAGE_H = 128
 IMAGE_C = 3
 N_LABELS = 100
 EPOCHS = 35
-HIDDEN_LAYERS = [512, 512]
+HIDDEN_LAYERS = [512, 512, 512]
 DROPOUT = 0.5
-EXP_ID = "2-hidden-layers"  # subfolder inside `out/` with saved state
+EXP_ID = "3-hidden-layers"  # subfolder inside `out/` with saved state
 TRAIN = True  # `True` = train, `False` = load saved state
 OUT_DIR = os.path.join("out", EXP_ID)
 
@@ -146,5 +146,25 @@ plt.xlabel('epoch')
 plt.ylabel('accuracy')
 plt.title('Accuracy during training')
 plt.plot()
+
+# %%
+# Train for 35 more epochs.
+train_history_2 = model.fit(
+    ds_train,
+    initial_epoch=EPOCHS,
+    epochs=EPOCHS + 35,
+    validation_data=ds_val,
+    callbacks=[cp_callback]
+)
+
+# %%
+# Train for 35 more epochs.
+train_history_3 = model.fit(
+    ds_train,
+    initial_epoch=EPOCHS + 35,
+    epochs=EPOCHS + 70,
+    validation_data=ds_val,
+    callbacks=[cp_callback]
+)
 
 # %%
