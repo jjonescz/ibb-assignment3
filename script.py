@@ -19,8 +19,8 @@ N_LABELS = 100
 EPOCHS = 35
 HIDDEN_LAYERS = [512, 512]
 DROPOUT = 0.5
-EXP_ID = "2-hidden-layers"  # subfolder inside `out/` with saved weights
-TRAIN = True  # `True` = train, `False` = load saved checkpoints
+EXP_ID = "2-hidden-layers"  # subfolder inside `out/` with saved state
+TRAIN = True  # `True` = train, `False` = load saved state
 OUT_DIR = os.path.join("out", EXP_ID)
 
 # %%
