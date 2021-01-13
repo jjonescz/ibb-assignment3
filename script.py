@@ -28,7 +28,9 @@ images = dict()
 labels = dict()
 for dataset in ['train', 'test']:
     rows = translations['AWE-Full image path'].str.startswith(dataset)
-    images[dataset] = list(translations[rows]['AWE image path'])
+    filenames = translations[rows]['AWE image path']
+    paths = map(lambda f: os.path.join(DATASET_PATH, f), filenames)
+    images[dataset] = list(paths)
     labels[dataset] = list(translations[rows]['Subject ID'])
 
 # %%
