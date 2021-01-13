@@ -45,3 +45,9 @@ for dataset in ['train', 'test']:
     datasets[dataset] = ds.map(transform)
 
 # %%
+# Split into training, validation and testing datasets.
+ds_train = datasets['train'].take(500).cache().shuffle(SHUFFLE_SIZE).batch(BATCH_SIZE)
+ds_val = datasets['train'].skip(500).cache().batch(BATCH_SIZE)
+ds_test = datasets['test'].cache().batch(BATCH_SIZE)
+
+# %%
