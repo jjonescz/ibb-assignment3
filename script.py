@@ -110,3 +110,23 @@ train_history = model.fit(
 )
 
 # %%
+# Plot loss evolution during training.
+plt.plot(train_history.history['loss'], label='training')
+plt.plot(train_history.history['val_loss'], label='validation')
+plt.legend()
+plt.xlabel('epoch')
+plt.ylabel('crossentropy loss')
+plt.title('Loss during training')
+plt.plot()
+
+# %%
+# Plot accuracy evolution during training.
+plt.plot(train_history.history['accuracy'], label='training')
+plt.plot(train_history.history['val_accuracy'], label='validation')
+plt.legend()
+plt.xlabel('epoch')
+plt.ylabel('accuracy')
+plt.title('Accuracy during training')
+plt.plot()
+
+# %%
