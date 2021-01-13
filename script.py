@@ -16,10 +16,11 @@ IMAGE_W = 128
 IMAGE_H = 128
 IMAGE_C = 3
 N_LABELS = 100
-EPOCHS = 35
-HIDDEN_LAYERS = [512, 512, 512]
+EPOCHS = [10, 15, 10]
+LEARNING_RATES = [-1e-3, 1e-4, 1e-5]
+HIDDEN_LAYERS = [512, 512]
 DROPOUT = 0.5
-EXP_ID = "3-hidden-layers"  # subfolder inside `out/` with saved state
+EXP_ID = "4-transfer-learning"  # subfolder inside `out/` with saved state
 TRAIN = True  # `True` = train, `False` = load saved state
 OUT_DIR = os.path.join("out", EXP_ID)
 
@@ -91,7 +92,6 @@ ds_test = datasets['test'].cache().batch(BATCH_SIZE)
 # Load (or download) EfficientNet-B0.
 efficientnet_b0 = tf.keras.applications.EfficientNetB0(
     include_top=False, input_shape=(IMAGE_H, IMAGE_W, IMAGE_C))
-efficientnet_b0.trainable = False
 
 # %%
 # Construct CNN model.
@@ -115,22 +115,39 @@ cp_callback = tf.keras.callbacks.ModelCheckpoint(
 
 # %%
 # Train.
-model.compile(
-    optimizer=tf.optimizers.Adam(),
-    loss=tf.losses.SparseCategoricalCrossentropy(),
-    metrics=[tf.metrics.SparseCategoricalAccuracy(name="accuracy")]
-)
-train_history = model.fit(
-    ds_train,
-    epochs=EPOCHS,
-    validation_data=ds_val,
-    callbacks=[cp_callback]
-)
+epochs = 0
+training = []
+for e, lr in zip(EPOCHS, LEARNING_RATES):
+    efficientnet_b0.trainable = lr > 0
+    model.compile(
+        optimizer=tf.optimizers.Adam(abs(lr)),
+        loss=tf.losses.SparseCategoricalCrossentropy(),
+        metrics=[tf.metrics.SparseCategoricalAccuracy(name="accuracy")]
+    )
+    t = model.fit(
+        ds_train,
+        initial_epoch=epochs,
+        epochs=epochs + e,
+        validation_data=ds_val,
+        callbacks=[cp_callback]
+    )
+    training.append(t)
+    epochs += e
+
+# %%
+# Get train history values.
+train_history = dict()
+for t in training:
+    for key, value in t.history.items():
+        if key in train_history:
+            train_history[key].extend(value)
+        else:
+            train_history[key] = value.copy()
 
 # %%
 # Plot loss evolution during training.
-plt.plot(train_history.history['loss'], label='training')
-plt.plot(train_history.history['val_loss'], label='validation')
+plt.plot(train_history['loss'], label='training')
+plt.plot(train_history['val_loss'], label='validation')
 plt.legend()
 plt.xlabel('epoch')
 plt.ylabel('crossentropy loss')
@@ -139,32 +156,12 @@ plt.plot()
 
 # %%
 # Plot accuracy evolution during training.
-plt.plot(train_history.history['accuracy'], label='training')
-plt.plot(train_history.history['val_accuracy'], label='validation')
+plt.plot(train_history['accuracy'], label='training')
+plt.plot(train_history['val_accuracy'], label='validation')
 plt.legend()
 plt.xlabel('epoch')
 plt.ylabel('accuracy')
 plt.title('Accuracy during training')
 plt.plot()
-
-# %%
-# Train for 35 more epochs.
-train_history_2 = model.fit(
-    ds_train,
-    initial_epoch=EPOCHS,
-    epochs=EPOCHS + 35,
-    validation_data=ds_val,
-    callbacks=[cp_callback]
-)
-
-# %%
-# Train for 35 more epochs.
-train_history_3 = model.fit(
-    ds_train,
-    initial_epoch=EPOCHS + 35,
-    epochs=EPOCHS + 70,
-    validation_data=ds_val,
-    callbacks=[cp_callback]
-)
 
 # %%
