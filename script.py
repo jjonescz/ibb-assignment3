@@ -25,6 +25,7 @@ OUT_DIR = os.path.join("out", EXP_ID)
 
 # %%
 # Copy this file to output directory.
+os.makedirs(OUT_DIR, exist_ok=True)
 shutil.copyfile(__file__, os.path.join(OUT_DIR, os.path.basename(__file__)))
 
 # %%
