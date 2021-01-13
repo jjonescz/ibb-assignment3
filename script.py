@@ -17,7 +17,9 @@ IMAGE_H = 128
 IMAGE_C = 3
 N_LABELS = 100
 EPOCHS = 35
-EXP_ID = "initial"  # subfolder inside `out/` with saved weights
+HIDDEN_LAYERS = [512, 512]
+DROPOUT = 0.5
+EXP_ID = "2-hidden-layers"  # subfolder inside `out/` with saved weights
 TRAIN = True  # `True` = train, `False` = load saved checkpoints
 OUT_DIR = os.path.join("out", EXP_ID)
 
@@ -83,6 +85,9 @@ efficientnet_b0.trainable = False
 x = inputs = tf.keras.layers.Input(shape=[IMAGE_H, IMAGE_W, IMAGE_C])
 x = efficientnet_b0(x)
 x = tf.keras.layers.GlobalMaxPool2D()(x)
+for h in HIDDEN_LAYERS:
+    x = tf.keras.layers.Dense(h, activation=tf.nn.relu)(x)
+    x = tf.keras.layers.Dropout(DROPOUT)(x)
 x = tf.keras.layers.Dense(N_LABELS, activation=tf.nn.softmax)(x)
 model = tf.keras.Model(inputs=inputs, outputs=x)
 
