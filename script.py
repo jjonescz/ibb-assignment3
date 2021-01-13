@@ -47,6 +47,13 @@ for dataset in ['train', 'test']:
     datasets[dataset] = ds.map(transform)
 
 # %%
+# Determine image shapes.
+image_shapes = np.array([image.shape for image, _ in datasets['train']])
+print(f'Min image size: {image_shapes.min(axis=0)}')
+print(f'Max image size: {image_shapes.max(axis=0)}')
+print(f'Avg image size: {image_shapes.mean(axis=0)}')
+
+# %%
 # Split into training, validation and testing datasets.
 ds_train = datasets['train'].take(500).cache().shuffle(SHUFFLE_SIZE).batch(BATCH_SIZE)
 ds_val = datasets['train'].skip(500).cache().batch(BATCH_SIZE)
