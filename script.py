@@ -22,7 +22,7 @@ LEARNING_RATES = [-1e-3, -1e-4]  # negative value freezes EfficientNet
 HIDDEN_LAYERS = [512, 512]
 GROUP_NORM = 16
 DROPOUT = 0.5
-EXP_ID = "22-augment-again"  # subfolder inside `out/` with saved state
+EXP_ID = "23-final"  # subfolder inside `out/` with saved state
 TRAIN = True  # `True` = train, `False` = load saved state
 OUT_DIR = os.path.join("out", EXP_ID)
 
@@ -83,7 +83,7 @@ def augment(image, label):
                                     tf.random.uniform([], minval=IMAGE_W, maxval=IMAGE_W + 40, dtype=tf.int32)])
     image = tf.image.random_crop(image, [IMAGE_H, IMAGE_W, IMAGE_C])
     return image, label
-datasets['train'] = datasets['train'].map(augment).prefetch(tf.data.experimental.AUTOTUNE)
+# datasets['train'] = datasets['train'].map(augment).prefetch(tf.data.experimental.AUTOTUNE)
 
 # %%
 # # Plot some images.
@@ -192,5 +192,29 @@ plt.xlabel('epoch')
 plt.ylabel('accuracy')
 plt.title('Accuracy during training')
 plt.plot()
+
+# %%
+# Get predictions on test set.
+preds = model.predict(ds_test)
+
+# %%
+# Compute CMC curve.
+def compute_rank_accuracy(rank):
+    acc = 0
+    for p, (_, label) in zip(preds, ds_test.unbatch()):
+        if label in np.argsort(p)[::-1][:rank]:
+            acc += 1
+    return acc / preds.shape[0]
+
+cmc = [compute_rank_accuracy(r + 1) for r in range(N_LABELS)]
+
+# %%
+# Plot CMC curve.
+plt.plot(range(1, N_LABELS + 1), cmc)
+plt.xticks([1] + list(range(20, N_LABELS + 1, 20)))
+plt.ylabel('recognition rate')
+plt.xlabel('rank')
+plt.savefig(os.path.join(OUT_DIR, 'cmc.pdf'), bbox_inches='tight', pad_inches=0)
+plt.show()
 
 # %%
