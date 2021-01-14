@@ -27,7 +27,7 @@ plt.legend()
 plt.xlabel('epoch')
 plt.ylabel('accuracy')
 plt.savefig(os.path.join(FIGURES_DIR, 'acc.pdf'), bbox_inches='tight', pad_inches=0)
-plt.plot()
+plt.clf()
 
 # %%
 # Load CMC.
@@ -45,7 +45,7 @@ plt.ylabel('recognition rate')
 plt.xlabel('rank')
 plt.legend()
 plt.savefig(os.path.join(FIGURES_DIR, 'cmc.pdf'), bbox_inches='tight', pad_inches=0)
-plt.show()
+plt.clf()
 
 # %%
 # Report performance metrics.
