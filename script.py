@@ -174,6 +174,10 @@ with open(os.path.join(OUT_DIR, 'train_history.pkl'), 'wb') as f:
     pickle.dump(train_history, f)
 
 # %%
+# Save model.
+model.save(os.path.join(OUT_DIR, 'model.h5'), include_optimizer=False)
+
+# %%
 # Plot loss evolution during training.
 plt.plot(train_history['loss'], label='training')
 plt.plot(train_history['val_loss'], label='validation')
