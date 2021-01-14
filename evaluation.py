@@ -51,3 +51,8 @@ plt.savefig(os.path.join(FIGURES_DIR, 'cmc.pdf'), bbox_inches='tight', pad_inche
 plt.show()
 
 # %%
+# Report performance metrics.
+print(f'Without augmentations: Rank-1={cmcA[0] * 100:.2f}, Rank-5={cmcA[4] * 100:.2f}, AUCMC={np.trapz(cmcA):.2f}')
+print(f'With augmentations: Rank-1={cmcB[0] * 100:.2f}, Rank-5={cmcB[4] * 100:.2f}, AUCMC={np.trapz(cmcB):.2f}')
+
+# %%
