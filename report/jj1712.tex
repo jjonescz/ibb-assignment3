@@ -64,11 +64,23 @@ Jan~Joneš
 
 \section{Introduction}
 
-I developed a convolutional neural network (CNN) that can segment ears pixel-wise.
-This network is intended for use in biometric pipeline.
-The architecture has been developed from scratch based on my knowledge from deep learning course~\cite{npfl114}.
-For training and evaluation, I have used AWE-W dataset~\cite{awe}.
-Source code of both the model and this report can be found in GitHub repository~\cite{repo}.
+Convolutional neural networks (CNNs) are deep neural networks that are state-of-the-art approach to solving various image-based tasks including segmentation and classification.
+They have also been recently employed for ear recognition~\cite{emersic2017}.
+
+In this paper we build and evaluate CNN model intended to be used as recognition stage in biometric pipeline with ear modality.
+Our model accepts image of an ear at its input and produces identification of the subject at its output.
+Input image is expected to be cropped, so that only the ear is visible.
+For that, e.g., a separate CNN-based ear detector can be used as a previous stage in the biometric pipeline and then the whole pipeline can accept images of people as inputs.
+
+Since ears are not prevalent modality in image-based authentication, high-quality datasets containing annotated ear images are scarce and they usually consist of relatively few datapoints.
+We approach this problem in two ways:
+\begin{enumerate}
+    \item We build our model upon publicly available CNN model pre-trained for image classification.
+          This model has been trained on datasets much larger than ours.
+          We use its weights as our starting point and employ transfer learning to adapt this model for ear image classification.
+    \item We analyze impact of image augmentation on the ear dataset used for training our CNN model.
+          We hypothesize that image augmentation could improve the model's ability to generalize even from relatively small dataset because the input data are more varied.
+\end{enumerate}
 
 \section{Methodology}
 The chosen dataset is already split into training and testing subsets (750 and 250 images, respectively).
