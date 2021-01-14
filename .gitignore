@@ -6,3 +6,6 @@
 
 # Python
 __pycache__/
+
+# Evaluation outputs (run `evaluation.py`)
+/figures/
