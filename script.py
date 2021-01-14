@@ -16,11 +16,11 @@ IMAGE_W = 128
 IMAGE_H = 128
 IMAGE_C = 3
 N_LABELS = 100
-EPOCHS = [10, 15, 10]
-LEARNING_RATES = [-1e-3, 1e-4, 1e-5]
-HIDDEN_LAYERS = [512, 512]
+EPOCHS = [35]
+LEARNING_RATES = [-1e-3]
+HIDDEN_LAYERS = [512]
 DROPOUT = 0.5
-EXP_ID = "4-transfer-learning"  # subfolder inside `out/` with saved state
+EXP_ID = "9-augmentations"  # subfolder inside `out/` with saved state
 TRAIN = True  # `True` = train, `False` = load saved state
 OUT_DIR = os.path.join("out", EXP_ID)
 
@@ -70,6 +70,24 @@ for dataset, ds in datasets.items():
     datasets[dataset] = ds.map(transform)
 
 # %%
+# Augment training images.
+def augment(image, label):
+    image = tf.image.random_flip_left_right(image)
+    image = tf.image.random_brightness(image, 0.2)
+    image = tf.image.random_hue(image, 0.2)
+    image = tf.image.random_saturation(image, 5, 10)
+    return image, label
+datasets['train'] = datasets['train'].map(augment).prefetch(tf.data.experimental.AUTOTUNE)
+
+# %%
+# # Plot some images.
+# for i, (image, _) in enumerate(datasets['train']):
+#     ax = plt.subplot(3, 3, i + 1)
+#     ax.imshow(image.numpy().astype('uint8'))
+#     if i == 8:
+#         break
+
+# %%
 # Split into training, validation and testing datasets.
 ds_train_shuffled = datasets['train'].shuffle(SHUFFLE_SIZE)
 ds_train = ds_train_shuffled.take(500).cache().shuffle(SHUFFLE_SIZE).batch(BATCH_SIZE)
@@ -90,7 +108,7 @@ ds_test = datasets['test'].cache().batch(BATCH_SIZE)
 
 # %%
 # Load (or download) EfficientNet-B0.
-efficientnet_b0 = tf.keras.applications.EfficientNetB0(
+efficientnet_b0 = tf.keras.applications.EfficientNetB2(
     include_top=False, input_shape=(IMAGE_H, IMAGE_W, IMAGE_C))
 
 # %%
