@@ -12,9 +12,9 @@ os.makedirs(FIGURES_DIR, exist_ok=True)
 
 # %%
 # Load train history.
-with open('out/23-final/train_history.pkl', 'rb') as f:
+with open('out/model-a/train_history.pkl', 'rb') as f:
     train_historyA = pickle.load(f)
-with open('out/24-augmentations/train_history.pkl', 'rb') as f:
+with open('out/model-b/train_history.pkl', 'rb') as f:
     train_historyB = pickle.load(f)
 
 # %%
@@ -31,9 +31,9 @@ plt.plot()
 
 # %%
 # Load CMC.
-with open('out/23-final/cmc.pkl', 'rb') as f:
+with open('out/model-a/cmc.pkl', 'rb') as f:
     cmcA = pickle.load(f)
-with open('out/24-augmentations/cmc.pkl', 'rb') as f:
+with open('out/model-b/cmc.pkl', 'rb') as f:
     cmcB = pickle.load(f)
 
 # %%
