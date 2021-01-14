@@ -4,5 +4,9 @@
     },
     "[bibtex]": {
         "editor.formatOnSave": false
-    }
+    },
+    "cSpell.words": [
+        "CNNs",
+        "Convolutional"
+    ]
 }
