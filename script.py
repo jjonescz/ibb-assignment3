@@ -213,6 +213,11 @@ def compute_rank_accuracy(rank):
 cmc = [compute_rank_accuracy(r + 1) for r in range(N_LABELS)]
 
 # %%
+# Save CMC curve.
+with open(os.path.join(OUT_DIR, 'cmc.pkl'), 'wb') as f:
+    pickle.dump(cmc, f)
+
+# %%
 # Plot CMC curve.
 plt.plot(range(1, N_LABELS + 1), cmc)
 plt.xticks([1] + list(range(20, N_LABELS + 1, 20)))
