@@ -22,8 +22,8 @@ LEARNING_RATES = [-1e-3, -1e-4]  # negative value freezes EfficientNet
 HIDDEN_LAYERS = [512, 512]
 GROUP_NORM = 16
 DROPOUT = 0.5
-EXP_ID = "23-final"  # subfolder inside `out/` with saved state
-TRAIN = True  # `True` = train, `False` = load saved state
+EXP_ID = "24-augmentations"  # subfolder inside `out/` with saved state
+AUGMENTATIONS = True
 OUT_DIR = os.path.join("out", EXP_ID)
 
 # %%
@@ -83,7 +83,8 @@ def augment(image, label):
                                     tf.random.uniform([], minval=IMAGE_W, maxval=IMAGE_W + 40, dtype=tf.int32)])
     image = tf.image.random_crop(image, [IMAGE_H, IMAGE_W, IMAGE_C])
     return image, label
-# datasets['train'] = datasets['train'].map(augment).prefetch(tf.data.experimental.AUTOTUNE)
+if AUGMENTATIONS:
+    datasets['train'] = datasets['train'].map(augment).prefetch(tf.data.experimental.AUTOTUNE)
 
 # %%
 # # Plot some images.
