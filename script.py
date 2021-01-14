@@ -1,6 +1,7 @@
 # %%
 import os
 import shutil
+import pickle
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -166,6 +167,11 @@ for t in training:
             train_history[key].extend(value)
         else:
             train_history[key] = value.copy()
+
+# %%
+# Save training history.
+with open(os.path.join(OUT_DIR, 'train_history.pkl'), 'wb') as f:
+    pickle.dump(train_history, f)
 
 # %%
 # Plot loss evolution during training.
