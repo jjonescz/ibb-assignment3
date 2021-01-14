@@ -23,6 +23,7 @@ GROUP_NORM = 16
 DROPOUT = 0.5
 EXP_ID = "model-a"  # subfolder inside `out/` with saved state
 AUGMENTATIONS = False
+VERBOSE = False
 OUT_DIR = os.path.join("out", EXP_ID)
 
 # %%
@@ -57,10 +58,11 @@ for dataset in ['train', 'test']:
 
 # %%
 # Determine image shapes.
-image_shapes = np.array([image.shape for image, _ in datasets['train']])
-print(f'Min image size: {image_shapes.min(axis=0)}')
-print(f'Max image size: {image_shapes.max(axis=0)}')
-print(f'Avg image size: {image_shapes.mean(axis=0)}')
+if VERBOSE:
+    image_shapes = np.array([image.shape for image, _ in datasets['train']])
+    print(f'Min image size: {image_shapes.min(axis=0)}')
+    print(f'Max image size: {image_shapes.max(axis=0)}')
+    print(f'Avg image size: {image_shapes.mean(axis=0)}')
 
 # %%
 # Resize images.
@@ -85,11 +87,13 @@ if AUGMENTATIONS:
 
 # %%
 # Plot some images.
-for i, (image, _) in enumerate(datasets['train']):
-    ax = plt.subplot(3, 3, i + 1)
-    ax.imshow(image.numpy().astype('uint8'))
-    if i == 8:
-        break
+if VERBOSE:
+    for i, (image, _) in enumerate(datasets['train']):
+        ax = plt.subplot(3, 3, i + 1)
+        ax.imshow(image.numpy().astype('uint8'))
+        if i == 8:
+            break
+    plt.show()
 
 # %%
 # Split into training, validation and testing datasets.
@@ -105,10 +109,11 @@ def plot_class_distribution(ds, name):
     plt.hist(labels, bins=N_LABELS)
     plt.title(f'Class distribution in {name} data')
     plt.show()
-plot_class_distribution(ds_train_shuffled.batch(BATCH_SIZE), 'original train')
-plot_class_distribution(ds_train, 'train')
-plot_class_distribution(ds_val, 'validation')
-plot_class_distribution(ds_test, 'test')
+if VERBOSE:
+    plot_class_distribution(ds_train_shuffled.batch(BATCH_SIZE), 'original train')
+    plot_class_distribution(ds_train, 'train')
+    plot_class_distribution(ds_val, 'validation')
+    plot_class_distribution(ds_test, 'test')
 
 # %%
 # Load (or download) EfficientNet.
@@ -177,23 +182,25 @@ model.save(os.path.join(OUT_DIR, 'model.h5'), include_optimizer=False)
 
 # %%
 # Plot loss evolution during training.
-plt.plot(train_history['loss'], label='training')
-plt.plot(train_history['val_loss'], label='validation')
-plt.legend()
-plt.xlabel('epoch')
-plt.ylabel('crossentropy loss')
-plt.title('Loss during training')
-plt.plot()
+if VERBOSE:
+    plt.plot(train_history['loss'], label='training')
+    plt.plot(train_history['val_loss'], label='validation')
+    plt.legend()
+    plt.xlabel('epoch')
+    plt.ylabel('crossentropy loss')
+    plt.title('Loss during training')
+    plt.plot()
 
 # %%
 # Plot accuracy evolution during training.
-plt.plot(train_history['accuracy'], label='training')
-plt.plot(train_history['val_accuracy'], label='validation')
-plt.legend()
-plt.xlabel('epoch')
-plt.ylabel('accuracy')
-plt.title('Accuracy during training')
-plt.plot()
+if VERBOSE:
+    plt.plot(train_history['accuracy'], label='training')
+    plt.plot(train_history['val_accuracy'], label='validation')
+    plt.legend()
+    plt.xlabel('epoch')
+    plt.ylabel('accuracy')
+    plt.title('Accuracy during training')
+    plt.plot()
 
 # %%
 # Get predictions on test set.
