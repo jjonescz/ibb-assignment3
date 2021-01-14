@@ -16,12 +16,12 @@ IMAGE_W = 128
 IMAGE_H = 128
 IMAGE_C = 3
 N_LABELS = 100
-EPOCHS = [25, 10]
-LEARNING_RATES = [-1e-2, -1e-3]
+EPOCHS = [70]
+LEARNING_RATES = [-1e-3]  # negative value freezes EfficientNet
 HIDDEN_LAYERS = [512, 512]
 GROUP_NORM = 16
 DROPOUT = 0.5
-EXP_ID = "16-dense-only"  # subfolder inside `out/` with saved state
+EXP_ID = "21-more-epochs"  # subfolder inside `out/` with saved state
 TRAIN = True  # `True` = train, `False` = load saved state
 OUT_DIR = os.path.join("out", EXP_ID)
 
@@ -109,13 +109,13 @@ ds_test = datasets['test'].cache().batch(BATCH_SIZE)
 
 # %%
 # Load (or download) EfficientNet.
-efficientnet_b0 = tf.keras.applications.EfficientNetB0(
+efficientnet = tf.keras.applications.EfficientNetB0(
     include_top=False, input_shape=(IMAGE_H, IMAGE_W, IMAGE_C))
 
 # %%
 # Construct CNN model.
 x = inputs = tf.keras.layers.Input(shape=[IMAGE_H, IMAGE_W, IMAGE_C])
-x = efficientnet_b0(x)
+x = efficientnet(x)
 x = tf.keras.layers.GlobalMaxPool2D()(x)
 for h in HIDDEN_LAYERS:
     x = tf.keras.layers.Dense(h, activation=tf.nn.relu)(x)
@@ -137,7 +137,7 @@ cp_callback = tf.keras.callbacks.ModelCheckpoint(
 epochs = 0
 training = []
 for e, lr in zip(EPOCHS, LEARNING_RATES):
-    efficientnet_b0.trainable = lr > 0
+    efficientnet.trainable = lr > 0
     model.compile(
         optimizer=tf.optimizers.Adam(abs(lr)),
         loss=tf.losses.SparseCategoricalCrossentropy(),
