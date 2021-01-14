@@ -16,7 +16,7 @@ pandas==1.1.3
 tensorflow==2.3.1
 ```
 
-Additionally, `data/` folder must contain [AWE dataset](http://awe.fri.uni-lj.si/downloads/AWEDataset.zip) unzipped so that e.g. `data/001/01.png` is a valid path.
+Additionally, folder `data` must contain [AWE dataset](http://awe.fri.uni-lj.si/downloads/AWEDataset.zip) unzipped so that e.g. `data/001/01.png` is a valid path.
 
 ## Training
 
