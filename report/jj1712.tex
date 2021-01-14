@@ -84,13 +84,14 @@ We approach this problem in two ways:
 
 \section{Methodology}\label{sec:meth}
 
+We use closed-set experimentation protocol where number of subjects is predetermined and therefore we effectively solve a classification task.
+
 Our CNN model is based on EfficientNet-B0 model~\cite{efficientNet} pre-trained on ImageNet~\cite{imageNet} without its top fully-connected layer that was used for the original classification.
 We instead append two fully-connected layers with 512 units, each followed by ReLU activation and dropout with rate 0.5.
 The network ends with softmax activation to classify the subjects.
-This layer has as many units as there are subjects, because we use a closed-set experimentation protocol.
 During training we freeze EfficientNet weights and train only the appended layers.
 
-We also experiment with image augmentation where each training image can be randomly flipped horizontally, be resized, cropped and have its brightness adjusted.
+We also experiment with image augmentation where each training image can be randomly flipped horizontally, resized, cropped or have its brightness adjusted.
 
 \section{Experiments and results}
 
