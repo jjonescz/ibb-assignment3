@@ -21,7 +21,7 @@ LEARNING_RATES = [-1e-3]
 HIDDEN_LAYERS = [512, 512]
 GROUP_NORM = 16
 DROPOUT = 0.5
-EXP_ID = "10-conv-head"  # subfolder inside `out/` with saved state
+EXP_ID = "11-conv-transpose-top"  # subfolder inside `out/` with saved state
 TRAIN = True  # `True` = train, `False` = load saved state
 OUT_DIR = os.path.join("out", EXP_ID)
 
@@ -121,7 +121,10 @@ for h in HIDDEN_LAYERS:
         h, kernel_size=3, strides=2, padding="same", use_bias=False)(x)
     x = tfa.layers.GroupNormalization(GROUP_NORM)(x)
     x = tf.keras.layers.ReLU()(x)
-x = tf.keras.layers.Dense(N_LABELS, activation=tf.nn.softmax)(x)
+x = tf.keras.layers.Conv2DTranspose(
+    N_LABELS, kernel_size=2, strides=1, padding="same", use_bias=False)(x)
+x = tf.keras.layers.BatchNormalization()(x)
+x = tf.keras.layers.Activation(tf.nn.sigmoid)(x)
 model = tf.keras.Model(inputs=inputs, outputs=x)
 
 # %%
