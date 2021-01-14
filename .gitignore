@@ -3,3 +3,6 @@
 
 # Training state
 /out/
+
+# Python
+__pycache__/
