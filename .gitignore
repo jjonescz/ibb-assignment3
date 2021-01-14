@@ -2,7 +2,12 @@
 /data/
 
 # Training state
-/out/
+/out/*
+
+# Include final training state
+!/out/model-*
+/out/model-*/*
+!/out/model-*/*.pkl
 
 # Python
 __pycache__/
