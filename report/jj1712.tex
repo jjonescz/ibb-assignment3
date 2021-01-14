@@ -83,7 +83,7 @@ We approach this problem in two ways:
 
 \section{Methodology}\label{sec:meth}
 
-We use closed-set experimentation protocol where number of subjects is predetermined and therefore we effectively solve a classification task.
+We use closed-set experimentation protocol where number of subjects is predetermined and therefore we effectively solve a~classification task.
 
 Our CNN model is based on EfficientNet-B0 model~\cite{efficientNet} pre-trained on ImageNet~\cite{imageNet} without its top fully-connected layer that was used for the original classification.
 We instead append two fully-connected layers with 512 units, each followed by ReLU activation and dropout with rate 0.5.
