@@ -18,9 +18,10 @@ IMAGE_C = 3
 N_LABELS = 100
 EPOCHS = [35]
 LEARNING_RATES = [-1e-3]
-HIDDEN_LAYERS = [512]
+HIDDEN_LAYERS = [512, 512]
+GROUP_NORM = 16
 DROPOUT = 0.5
-EXP_ID = "9-augmentations"  # subfolder inside `out/` with saved state
+EXP_ID = "10-conv-head"  # subfolder inside `out/` with saved state
 TRAIN = True  # `True` = train, `False` = load saved state
 OUT_DIR = os.path.join("out", EXP_ID)
 
@@ -107,7 +108,7 @@ ds_test = datasets['test'].cache().batch(BATCH_SIZE)
 # plot_class_distribution(ds_test, 'test')
 
 # %%
-# Load (or download) EfficientNet-B0.
+# Load (or download) EfficientNet.
 efficientnet_b0 = tf.keras.applications.EfficientNetB2(
     include_top=False, input_shape=(IMAGE_H, IMAGE_W, IMAGE_C))
 
@@ -115,10 +116,11 @@ efficientnet_b0 = tf.keras.applications.EfficientNetB2(
 # Construct CNN model.
 x = inputs = tf.keras.layers.Input(shape=[IMAGE_H, IMAGE_W, IMAGE_C])
 x = efficientnet_b0(x)
-x = tf.keras.layers.GlobalMaxPool2D()(x)
 for h in HIDDEN_LAYERS:
-    x = tf.keras.layers.Dense(h, activation=tf.nn.relu)(x)
-    x = tf.keras.layers.Dropout(DROPOUT)(x)
+    x = tf.keras.layers.Conv2D(
+        h, kernel_size=3, strides=2, padding="same", use_bias=False)(x)
+    x = tfa.layers.GroupNormalization(GROUP_NORM)(x)
+    x = tf.keras.layers.ReLU()(x)
 x = tf.keras.layers.Dense(N_LABELS, activation=tf.nn.softmax)(x)
 model = tf.keras.Model(inputs=inputs, outputs=x)
 
