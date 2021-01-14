@@ -1,0 +1,137 @@
+% ============================================================================================
+% This is a LaTeX template used for the course
+%
+%  I M A G E   B A S E D   B I O M E T R I C S
+%
+% Faculty of Computer and Information Science
+% University of Ljubljana
+% Slovenia, EU
+%
+% You can use this template for whatever reason you like.
+% If you have any questions feel free to contact
+% ziga.emersic@fri.uni-lj.si
+% ============================================================================================
+
+\documentclass[9pt]{IEEEtran}
+
+% basic
+\usepackage[english]{babel}
+\usepackage{graphicx,epstopdf,fancyhdr,amsmath,amsthm,amssymb,url,array,textcomp,svg,listings,hyperref,xcolor,colortbl,float,gensymb,longtable,supertabular,multicol,placeins}
+
+ % `sumniki' in names
+\usepackage[utf8x]{inputenc}
+
+ % search and copy for `sumniki'
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{glyphtounicode}
+\pdfgentounicode=1
+
+% tidy figures
+\graphicspath{{./figures/}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg,.eps}
+
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor trig-gs}
+
+% ============================================================================================
+
+\title{\vspace{0ex} %
+Ear Recognition
+\\ \large{Assignment \#3}\\ \normalsize{Image Based Biometrics 2020/21, Faculty of Computer and Information Science, University of Ljubljana}}
+\author{ %
+Jan~Joneš
+\vspace{-4.0ex}
+}
+
+% ============================================================================================
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+    Ears as biometric modality for identity recognition has several advantages.
+    This modality is universal and easily obtainable from images of people.
+    On the other hand, focus of image-based biometric research lies elsewhere (e.g., face recognition).
+    Therefore, high-quality datasets consisting of segmented and labeled ear images are scarce.
+    Furthermore, deep learning techniques evolve quickly and they provide state-of-the-art solutions for wide range of image classification tasks.
+    These techniques are certainly applicable to image-based biometry and ear recognition is one of those less researched.
+    In this paper we train deep neural network classifier on readily-available annotated ear dataset.
+    Due to low amount of data points available for training, we build our network upon model that is pre-trained on large image dataset from another domain.
+    We are able to achieve accuracy 19.60~\% on unseen test data.
+\end{abstract}
+
+\section{Introduction}
+
+I developed a convolutional neural network (CNN) that can segment ears pixel-wise.
+This network is intended for use in biometric pipeline.
+The architecture has been developed from scratch based on my knowledge from deep learning course~\cite{npfl114}.
+For training and evaluation, I have used AWE-W dataset~\cite{awe}.
+Source code of both the model and this report can be found in GitHub repository~\cite{repo}.
+
+\section{Methodology}
+The chosen dataset is already split into training and testing subsets (750 and 250 images, respectively).
+I have further subdivided the original training data into (actual) training and development subsets (500 and 250 images, respectively).
+Both of these training subsets were used during development of the detector.
+Testing data were used only during final evaluation.
+
+All images are already resized to the same size ($480 \times 360$ pixels) in the dataset.
+In order to use them easily in convolutional layers of the CNN, I have resized them to dimensions divisible by 32 ($480 \times 352$ pixels) during preprocessing.
+
+The CNN uses pre-trained EfficientNet-B0 network~\cite{efficientNet} as encoder in U-Net-like architecture~\cite{unet} with custom decoder and segmentation head.
+EfficientNet-B0 takes pixels as input and outputs them scaled down 32 times. The decoder uses transposed convolutions to upsample these features back to the original resolution and employs skip layers to pass information from the corresponding layer of the encoder. Segmentation head consists of transposed convolution and sigmoid activation layer.
+
+The encoder has its weights fixed to the pre-trained values. Only decoder's weights are trained. The CNN has 6.9 million trained parameters and 4.0 million fixed parameters.
+
+\section{Results}
+I have used intersection over union (IoU) to evaluate model's performance.
+To train the CNN, I have used BCE-Dice loss function.
+This loss was optimized using Adam optimizer with standard learning rate 0.001.
+
+From evolution of these metrics during training (Figure~\ref{fig:evo}), I~would ideally conclude number of epochs for training where loss would stop decreasing.
+Unfortunately, neither loss nor accuracy converged after 35 epochs and I did not posses computing power where evaluating more epochs would be feasible.
+Therefore I chose 35 as number of epochs for training noting that larger number would probably yield even better results.
+
+\begin{figure}[ht]
+    \centering
+    % \includegraphics[width=0.49\columnwidth]{loss}
+    % \includegraphics[width=0.49\columnwidth]{iou}
+    \caption{Evolution of metrics during training on training and development datasets.}
+    \label{fig:evo}
+\end{figure}
+
+Three best (97.9~\%, 97.8~\%, 97.7~\%) and three worst (22.7~\%, 33.1~\%, 61.5~\%) IoU results in development data can be seen in Figure~\ref{fig:examples}.
+The worst IoU results illustrate some problems the network might have, i.e., grayscale images, small faces (due to more people in the picture) and earrings, respectively.
+
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=1\columnwidth]{examples-best}\\
+    \vspace{0.5cm}
+    % \includegraphics[width=1\columnwidth]{examples-worst}
+    \caption{Three best (top) and three worst (bottom) segmentation results in development dataset.}
+    \label{fig:examples}
+\end{figure}
+
+Overall distribution of IoU in development dataset is depicted in Figure~\ref{fig:hist}.
+It can be seen that most data are segmented very well (IoU more than 90~\%).
+
+\begin{figure}
+    \centering
+    % \includegraphics[width=1\columnwidth]{iou-hist}
+    \caption{Histogram of IoU in development dataset.}
+    \label{fig:hist}
+\end{figure}
+
+Final mean IoU on training data was 92.7~\%, mean IoU on development data was 91.5~\% and mean IoU on testing data was 83.2~\%.
+
+\section{Conclusion}
+The trained CNN shows very good results as is and there is also some space for future improvement.
+Image augmentation would help making the training dataset more diverse (e.g., horizontal/vertical flips, color transformations, cutouts, etc.).
+Fine-tuning (a process where the pre-trained EfficientNet is also trained with low learning rate) usually also improves performance.
+Finally, architecture of the CNN could be more complex (e.g., higher-level EfficientNet could be used) but that would also make training more computing-intensive and hence slower.
+
+\bibliographystyle{IEEEtran}
+\bibliography{bibliography}
+
+\end{document}
