@@ -16,12 +16,12 @@ IMAGE_W = 128
 IMAGE_H = 128
 IMAGE_C = 3
 N_LABELS = 100
-EPOCHS = [70]
-LEARNING_RATES = [-1e-3]  # negative value freezes EfficientNet
+EPOCHS = [35, 35]
+LEARNING_RATES = [-1e-3, -1e-4]  # negative value freezes EfficientNet
 HIDDEN_LAYERS = [512, 512]
 GROUP_NORM = 16
 DROPOUT = 0.5
-EXP_ID = "21-more-epochs"  # subfolder inside `out/` with saved state
+EXP_ID = "22-augment-again"  # subfolder inside `out/` with saved state
 TRAIN = True  # `True` = train, `False` = load saved state
 OUT_DIR = os.path.join("out", EXP_ID)
 
@@ -75,10 +75,14 @@ for dataset, ds in datasets.items():
 def augment(image, label):
     image = tf.image.random_flip_left_right(image)
     image = tf.image.random_brightness(image, 0.2)
-    image = tf.image.random_hue(image, 0.2)
-    image = tf.image.random_saturation(image, 5, 10)
+    # image = tf.image.random_hue(image, 0.2)
+    # image = tf.image.random_saturation(image, 5, 10)
+    image = tf.image.resize_with_crop_or_pad(image, IMAGE_H + 20, IMAGE_W + 20)
+    image = tf.image.resize(image, [tf.random.uniform([], minval=IMAGE_H, maxval=IMAGE_H + 40, dtype=tf.int32),
+                                    tf.random.uniform([], minval=IMAGE_W, maxval=IMAGE_W + 40, dtype=tf.int32)])
+    image = tf.image.random_crop(image, [IMAGE_H, IMAGE_W, IMAGE_C])
     return image, label
-# datasets['train'] = datasets['train'].map(augment).prefetch(tf.data.experimental.AUTOTUNE)
+datasets['train'] = datasets['train'].map(augment).prefetch(tf.data.experimental.AUTOTUNE)
 
 # %%
 # # Plot some images.
