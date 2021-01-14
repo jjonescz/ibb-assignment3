@@ -137,10 +137,13 @@ These results tell us that image augmentations are not enough to make the CNN ge
 \end{table}
 
 \section{Conclusion}
-The trained CNN shows very good results as is and there is also some space for future improvement.
-Image augmentation would help making the training dataset more diverse (e.g., horizontal/vertical flips, color transformations, cutouts, etc.).
-Fine-tuning (a process where the pre-trained EfficientNet is also trained with low learning rate) usually also improves performance.
-Finally, architecture of the CNN could be more complex (e.g., higher-level EfficientNet could be used) but that would also make training more computing-intensive and hence slower.
+
+We have trained and analyzed a CNN-based ear recognition system.
+From accuracy on validation data observed during training, we expected to get around 60~\% accuracy on unseen test set.
+We obtained significantly worse results and we concluded that the amount of training data was too low for a deep neural network.
+
+For a real-world authentication system, we would need to modify our CNN model for the open-set recognition problem.
+Future work could also focus on fine-tuning the pre-trained model and analyzing whether another model could be more suitable than EfficientNet.
 
 \bibliographystyle{IEEEtran}
 \bibliography{bibliography}
