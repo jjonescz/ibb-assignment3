@@ -64,15 +64,15 @@ Jan~Joneš
 
 \section{Introduction}
 
-Convolutional neural networks (CNNs) are deep neural networks that are state-of-the-art approach to solving various image-based tasks including segmentation and classification.
-They have also been recently employed for ear recognition~\cite{emersic2017}.
+Convolutional neural networks (CNNs) are used to solve various image-based tasks including segmentation and classification.
+They have also been recently employed for ear recognition~\cite{emersic2017,dodge2018,emersic2019,eyiokur2017,zhang2018}.
 
 In this paper we build and evaluate CNN model intended to be used as recognition stage in biometric pipeline with ear modality.
-Our model accepts image of an ear at its input and produces identification of the subject at its output.
-Input image is expected to be cropped, so that only the ear is visible.
-For that, e.g., a separate CNN-based ear detector can be used as a previous stage in the biometric pipeline and then the whole pipeline can accept images of people as inputs.
+Our model accepts image of an ear at its input and produces subject identification at its output.
+Input image is expected to be cropped so that only the ear is visible.
+If we wanted the whole pipeline to accept images of people as inputs, a~separate CNN-based ear detector~\cite{emersic2018} could be used as previous stage in the biometric pipeline.
 
-Since ears are not prevalent modality in image-based authentication, high-quality datasets containing annotated ear images are scarce and they usually consist of relatively few datapoints.
+Since ears are not the prevalent modality in image-based authentication, high-quality datasets containing annotated ear images are scarce and they usually consist of relatively few datapoints.
 We approach this problem in two ways:
 \begin{enumerate}
     \item We build our model upon publicly available CNN model pre-trained for image classification.
@@ -95,9 +95,9 @@ We also experiment with image augmentation where each training image can be rand
 
 \section{Experiments and results}
 
-We use dataset of ear images scraped from the Internet~\cite{awe}.
+We use AWE~\cite{emersic2017ear}, a dataset of ear images scraped from the Internet.
 It contains data of 100 subjects, 10 cropped ear images per subject.
-It is split into train, validation and test sets of 500, 250 and 250 images, respectively.
+We split images into train, validation and test sets of 500, 250 and 250 images, respectively.
 
 Performance of the CNN is evaluated using rank-1 and rank-5 recognition rates, cumulative match-score curve (CMC) and area under the CMC curve (AUCMC).
 
