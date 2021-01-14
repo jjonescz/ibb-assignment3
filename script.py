@@ -21,8 +21,8 @@ LEARNING_RATES = [-1e-3, -1e-4]  # negative value freezes EfficientNet
 HIDDEN_LAYERS = [512, 512]
 GROUP_NORM = 16
 DROPOUT = 0.5
-EXP_ID = "24-augmentations"  # subfolder inside `out/` with saved state
-AUGMENTATIONS = True
+EXP_ID = "model-a"  # subfolder inside `out/` with saved state
+AUGMENTATIONS = False
 OUT_DIR = os.path.join("out", EXP_ID)
 
 # %%
@@ -56,11 +56,11 @@ for dataset in ['train', 'test']:
     datasets[dataset] = ds.map(transform)
 
 # %%
-# # Determine image shapes.
-# image_shapes = np.array([image.shape for image, _ in datasets['train']])
-# print(f'Min image size: {image_shapes.min(axis=0)}')
-# print(f'Max image size: {image_shapes.max(axis=0)}')
-# print(f'Avg image size: {image_shapes.mean(axis=0)}')
+# Determine image shapes.
+image_shapes = np.array([image.shape for image, _ in datasets['train']])
+print(f'Min image size: {image_shapes.min(axis=0)}')
+print(f'Max image size: {image_shapes.max(axis=0)}')
+print(f'Avg image size: {image_shapes.mean(axis=0)}')
 
 # %%
 # Resize images.
@@ -75,8 +75,6 @@ for dataset, ds in datasets.items():
 def augment(image, label):
     image = tf.image.random_flip_left_right(image)
     image = tf.image.random_brightness(image, 0.2)
-    # image = tf.image.random_hue(image, 0.2)
-    # image = tf.image.random_saturation(image, 5, 10)
     image = tf.image.resize_with_crop_or_pad(image, IMAGE_H + 20, IMAGE_W + 20)
     image = tf.image.resize(image, [tf.random.uniform([], minval=IMAGE_H, maxval=IMAGE_H + 40, dtype=tf.int32),
                                     tf.random.uniform([], minval=IMAGE_W, maxval=IMAGE_W + 40, dtype=tf.int32)])
@@ -86,12 +84,12 @@ if AUGMENTATIONS:
     datasets['train'] = datasets['train'].map(augment).prefetch(tf.data.experimental.AUTOTUNE)
 
 # %%
-# # Plot some images.
-# for i, (image, _) in enumerate(datasets['train']):
-#     ax = plt.subplot(3, 3, i + 1)
-#     ax.imshow(image.numpy().astype('uint8'))
-#     if i == 8:
-#         break
+# Plot some images.
+for i, (image, _) in enumerate(datasets['train']):
+    ax = plt.subplot(3, 3, i + 1)
+    ax.imshow(image.numpy().astype('uint8'))
+    if i == 8:
+        break
 
 # %%
 # Split into training, validation and testing datasets.
@@ -101,16 +99,16 @@ ds_val = ds_train_shuffled.skip(500).cache().batch(BATCH_SIZE)
 ds_test = datasets['test'].cache().batch(BATCH_SIZE)
 
 # %%
-# # Plot class distribution.
-# def plot_class_distribution(ds, name):
-#     labels = [label.numpy() for _, label in ds.unbatch()]
-#     plt.hist(labels, bins=N_LABELS)
-#     plt.title(f'Class distribution in {name} data')
-#     plt.show()
-# plot_class_distribution(ds_train_shuffled.batch(BATCH_SIZE), 'original train')
-# plot_class_distribution(ds_train, 'train')
-# plot_class_distribution(ds_val, 'validation')
-# plot_class_distribution(ds_test, 'test')
+# Plot class distribution.
+def plot_class_distribution(ds, name):
+    labels = [label.numpy() for _, label in ds.unbatch()]
+    plt.hist(labels, bins=N_LABELS)
+    plt.title(f'Class distribution in {name} data')
+    plt.show()
+plot_class_distribution(ds_train_shuffled.batch(BATCH_SIZE), 'original train')
+plot_class_distribution(ds_train, 'train')
+plot_class_distribution(ds_val, 'validation')
+plot_class_distribution(ds_test, 'test')
 
 # %%
 # Load (or download) EfficientNet.
@@ -216,14 +214,5 @@ cmc = [compute_rank_accuracy(r + 1) for r in range(N_LABELS)]
 # Save CMC curve.
 with open(os.path.join(OUT_DIR, 'cmc.pkl'), 'wb') as f:
     pickle.dump(cmc, f)
-
-# %%
-# Plot CMC curve.
-plt.plot(range(1, N_LABELS + 1), cmc)
-plt.xticks([1] + list(range(20, N_LABELS + 1, 20)))
-plt.ylabel('recognition rate')
-plt.xlabel('rank')
-plt.savefig(os.path.join(OUT_DIR, 'cmc.pdf'), bbox_inches='tight', pad_inches=0)
-plt.show()
 
 # %%
