@@ -97,12 +97,13 @@ We also experiment with image augmentation where each training image can be rand
 We use AWE~\cite{emersic2017ear}, a dataset of ear images scraped from the Internet.
 It contains data of 100 subjects, 10 cropped ear images per subject.
 We split images into train, validation and test sets of 500, 250 and 250 images, respectively.
+All images are resized to $128 \times 128$ pixels and batched by 64.
 
 Performance of the CNN is evaluated using rank-1 and rank-5 recognition rates, cumulative match-score curve (CMC) and area under the CMC curve (AUCMC).
 
 We train two models---one on the original training dataset (Model A) and another on augmented images as described in Section~\ref{sec:meth} (Model B).
 Both models are trained with Adam optimizer using learning rate $10^{-3}$ for first 35 epochs and decreased to $10^{-4}$ for next 35 epochs.
-We have used accuracy on validation set (Figure~\ref{fig:acc}) to determine number of epochs and other hyperparameters.
+We have used accuracy on validation set (Figure~\ref{fig:acc}) to determine hyperparameters and architecture of the CNN.
 
 \begin{figure}[ht]
     \centering
