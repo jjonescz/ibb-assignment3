@@ -99,10 +99,19 @@ We use dataset of ear images scraped from the Internet~\cite{awe}.
 It contains data of 100 subjects, 10 cropped ear images per subject.
 It is split into train, validation and test sets of 500, 250 and 250 images, respectively.
 
-We evaluate the CNN performance using rank-1 and rank-5 recognition rates, cumulative match-score curve (CMC) and area under the CMC curve (AUCMC).
+Performance of the CNN is evaluated using rank-1 and rank-5 recognition rates, cumulative match-score curve (CMC) and area under the CMC curve (AUCMC).
 
 We train two models---one on the original training dataset (Model A) and another on augmented images as described in Section~\ref{sec:meth} (Model B).
 Both models are trained with Adam optimizer using learning rate $10^{-3}$ for first 35 epochs and decreased to $10^{-4}$ for next 35 epochs.
+We have used accuracy on validation set (Figure~\ref{fig:acc}) to determine number of epochs and other hyperparameters.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\columnwidth]{acc}
+    \caption{Evolution of models' accuracy during training.
+    Accuracy is computed after each epoch on both training and validation sets.}
+    \label{fig:acc}
+\end{figure}
 
 CMC curve of Model A is slightly worse than that of Model B (Figure~\ref{fig:cmc}).
 Accuracy of Model A is significantly better than that of Model B (Table~\ref{tab:metrics}).

@@ -22,14 +22,15 @@ with open('out/24-augmentations/train_history.pkl', 'rb') as f:
     train_historyB = pickle.load(f)
 
 # %%
-# Plot train history.
-plt.plot(train_historyA['accuracy'], label='training without aug.')
-plt.plot(train_historyA['val_accuracy'], label='validation without aug.')
-plt.plot(train_historyB['accuracy'], label='training with aug.')
-plt.plot(train_historyB['val_accuracy'], label='validation with aug.')
+# Plot train evolution.
+plt.plot(train_historyA['accuracy'], 'r', label='training without aug.')
+plt.plot(train_historyA['val_accuracy'], 'r--', label='validation without aug.')
+plt.plot(train_historyB['accuracy'], 'g', label='training with aug.')
+plt.plot(train_historyB['val_accuracy'], 'g--', label='validation with aug.')
 plt.legend()
 plt.xlabel('epoch')
 plt.ylabel('accuracy')
+plt.savefig(os.path.join(FIGURES_DIR, 'acc.pdf'), bbox_inches='tight', pad_inches=0)
 plt.plot()
 
 # %%
