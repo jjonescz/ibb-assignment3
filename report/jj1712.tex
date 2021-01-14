@@ -51,20 +51,19 @@ Jan~Joneš
 \maketitle
 
 \begin{abstract}
-    Ears as biometric modality for identity recognition has several advantages.
-    This modality is universal and easily obtainable from images of people.
+    Ears as biometric modality for identity recognition have several advantages.
+    It is highly universal modality and easily obtainable from images of people.
     On the other hand, focus of image-based biometric research lies elsewhere (e.g., face recognition).
-    Therefore, high-quality datasets consisting of segmented and labeled ear images are scarce.
-    Furthermore, deep learning techniques evolve quickly and they provide state-of-the-art solutions for wide range of image classification tasks.
-    These techniques are certainly applicable to image-based biometry and ear recognition is one of those less researched.
+    Therefore, high-quality datasets consisting of cropped and labeled ear images are scarce.
+    This poses a challenge for deep neural networks that otherwise provide state-of-the-art solutions for image classification tasks but were introduced in ear recognition research only recently.
     In this paper we train deep neural network classifier on readily-available annotated ear dataset.
-    Due to low amount of data points available for training, we build our network upon model that is pre-trained on large image dataset from another domain.
+    Due to low amount of data points available for training, we build our network upon model that is pre-trained on large image dataset from another domain and we experiment with image augmentations.
     We are able to achieve accuracy 19.60~\% on unseen test data.
 \end{abstract}
 
 \section{Introduction}
 
-Convolutional neural networks (CNNs) are used to solve various image-based tasks including segmentation and classification.
+Convolutional neural networks (CNNs) are used to solve various image-based tasks from segmentation~\cite{chen2014semantic} to object detection~\cite{tan2020efficientdet}.
 They have also been recently employed for ear recognition~\cite{emersic2017,dodge2018,emersic2019,eyiokur2017,zhang2018}.
 
 In this paper we build and evaluate CNN model intended to be used as recognition stage in biometric pipeline with ear modality.
