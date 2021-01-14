@@ -16,12 +16,12 @@ IMAGE_W = 128
 IMAGE_H = 128
 IMAGE_C = 3
 N_LABELS = 100
-EPOCHS = [35]
-LEARNING_RATES = [-1e-3]
+EPOCHS = [25, 10]
+LEARNING_RATES = [-1e-2, -1e-3]
 HIDDEN_LAYERS = [512, 512]
 GROUP_NORM = 16
 DROPOUT = 0.5
-EXP_ID = "11-conv-transpose-top"  # subfolder inside `out/` with saved state
+EXP_ID = "16-dense-only"  # subfolder inside `out/` with saved state
 TRAIN = True  # `True` = train, `False` = load saved state
 OUT_DIR = os.path.join("out", EXP_ID)
 
@@ -78,7 +78,7 @@ def augment(image, label):
     image = tf.image.random_hue(image, 0.2)
     image = tf.image.random_saturation(image, 5, 10)
     return image, label
-datasets['train'] = datasets['train'].map(augment).prefetch(tf.data.experimental.AUTOTUNE)
+# datasets['train'] = datasets['train'].map(augment).prefetch(tf.data.experimental.AUTOTUNE)
 
 # %%
 # # Plot some images.
@@ -109,22 +109,18 @@ ds_test = datasets['test'].cache().batch(BATCH_SIZE)
 
 # %%
 # Load (or download) EfficientNet.
-efficientnet_b0 = tf.keras.applications.EfficientNetB2(
+efficientnet_b0 = tf.keras.applications.EfficientNetB0(
     include_top=False, input_shape=(IMAGE_H, IMAGE_W, IMAGE_C))
 
 # %%
 # Construct CNN model.
 x = inputs = tf.keras.layers.Input(shape=[IMAGE_H, IMAGE_W, IMAGE_C])
 x = efficientnet_b0(x)
+x = tf.keras.layers.GlobalMaxPool2D()(x)
 for h in HIDDEN_LAYERS:
-    x = tf.keras.layers.Conv2D(
-        h, kernel_size=3, strides=2, padding="same", use_bias=False)(x)
-    x = tfa.layers.GroupNormalization(GROUP_NORM)(x)
-    x = tf.keras.layers.ReLU()(x)
-x = tf.keras.layers.Conv2DTranspose(
-    N_LABELS, kernel_size=2, strides=1, padding="same", use_bias=False)(x)
-x = tf.keras.layers.BatchNormalization()(x)
-x = tf.keras.layers.Activation(tf.nn.sigmoid)(x)
+    x = tf.keras.layers.Dense(h, activation=tf.nn.relu)(x)
+    x = tf.keras.layers.Dropout(DROPOUT)(x)
+x = tf.keras.layers.Dense(N_LABELS, activation=tf.nn.softmax)(x)
 model = tf.keras.Model(inputs=inputs, outputs=x)
 
 # %%
