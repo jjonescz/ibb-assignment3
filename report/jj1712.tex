@@ -86,11 +86,11 @@ We approach this problem in two ways:
 We use closed-set experimentation protocol where number of subjects is predetermined and therefore we effectively solve a~classification task.
 
 Our CNN model is based on EfficientNet-B0 model~\cite{efficientNet} pre-trained on ImageNet~\cite{imageNet} without its top fully-connected layer that was used for the original classification.
-We instead append two fully-connected layers with 512 units, each followed by ReLU activation and dropout with rate 0.5.
+We instead append our own classification head.
 The network ends with softmax activation to classify the subjects.
 During training we freeze EfficientNet weights and train only the appended layers.
 
-We also experiment with image augmentation where each training image can be randomly flipped horizontally, resized, cropped or have its brightness adjusted.
+We also experiment with image augmentations where each training image can be randomly flipped horizontally, resized, cropped or have its brightness adjusted.
 
 \section{Experiments and results}
 
@@ -100,7 +100,7 @@ We split images into train, validation and test sets of 500, 250 and 250 images,
 All images are resized to $128 \times 128$ pixels and batch size is set to 64.
 
 We train two models---one on the original training dataset (Model A) and another on augmented images as described in Section~\ref{sec:meth} (Model B).
-Both models are trained with Adam optimizer using learning rate $10^{-3}$ for first 35 epochs and decreased to $10^{-4}$ for next 35 epochs.
+Both models use classification head consisting of two fully-connected layers with 512 units, each followed by ReLU activation and dropout with rate 0.5 and are trained with Adam optimizer using learning rate $10^{-3}$ for first 35 epochs and decreased to $10^{-4}$ for next 35 epochs.
 We have used accuracy on validation set during training (Figure~\ref{fig:acc}) to determine hyperparameters and architecture of the CNN.
 
 \begin{figure}[ht]
