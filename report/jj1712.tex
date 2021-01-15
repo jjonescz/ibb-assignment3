@@ -57,14 +57,14 @@ Jan~Joneš
     Therefore, high-quality datasets consisting of cropped and labeled ear images are scarce.
     This poses a challenge for deep neural networks that otherwise provide state-of-the-art solutions for image classification tasks but were introduced in ear recognition research only recently.
     In this paper we train deep neural network classifier on readily-available annotated ear dataset.
-    Due to low amount of data points available for training, we build our network upon model that is pre-trained on large image dataset from another domain and we experiment with image augmentations.
+    Due to low amount of data points available for training, we employ transfer learning and experiment with image augmentations.
     We are able to achieve accuracy 19.60~\% on unseen test data.
 \end{abstract}
 
 \section{Introduction}
 
 Convolutional neural networks (CNNs) are used to solve various image-based tasks from segmentation~\cite{chen2014semantic} to object detection~\cite{tan2020efficientdet}.
-They have also been recently employed for ear recognition~\cite{emersic2017,dodge2018,emersic2019,eyiokur2017,zhang2018}.
+They have also recently been used for ear recognition~\cite{emersic2017,dodge2018,emersic2019,eyiokur2017,zhang2018}.
 
 In this paper we build and evaluate CNN model intended to be used as recognition stage in biometric pipeline with ear modality.
 Our model accepts image of an ear at its input and produces subject identification at its output.
@@ -97,9 +97,7 @@ We also experiment with image augmentation where each training image can be rand
 We use AWE~\cite{emersic2017ear}, a dataset of ear images scraped from the Internet.
 It contains data of 100 subjects, 10 cropped ear images per subject.
 We split images into train, validation and test sets of 500, 250 and 250 images, respectively.
-All images are resized to $128 \times 128$ pixels and batched by 64.
-
-Performance of the CNN is evaluated using rank-1 and rank-5 recognition rates, cumulative match-score curve (CMC) and area under the CMC curve (AUCMC).
+All images are resized to $128 \times 128$ pixels and batch size is set to 64.
 
 We train two models---one on the original training dataset (Model A) and another on augmented images as described in Section~\ref{sec:meth} (Model B).
 Both models are trained with Adam optimizer using learning rate $10^{-3}$ for first 35 epochs and decreased to $10^{-4}$ for next 35 epochs.
@@ -113,12 +111,14 @@ We have used accuracy on validation set during training (Figure~\ref{fig:acc}) t
     \label{fig:acc}
 \end{figure}
 
-CMC curve of Model B is worse for most ranks than that of Model A (Figure~\ref{fig:cmc}).
-Accuracy of Model A is significantly better than that of Model B (Table~\ref{tab:metrics}).
-These results tell us that image augmentations are not enough to make the CNN generalize well, most likely due to low amount of training data.
+Performance of both models is evaluated using Rank-1 and Rank-5 recognition rates, cumulative match-score curve (CMC) and area under the CMC curve (AUCMC).
+
+CMC curve of Model B is worse for most ranks than that of Model A (Figure~\ref{fig:cmc}) and so is overall area under the curve (Table~\ref{tab:metrics}).
+Furthermore, both Rank-1 and Rank-5 recognition rates of Model A are significantly better than those of Model B (Table~\ref{tab:metrics}).
+These results tell us that our image augmentations are not enough to make the CNN generalize well.
 
 From accuracy on validation data observed during training (Figure~\ref{fig:acc}), we expect to get around 60~\% accuracy on unseen test set.
-We obtain significantly worse results (Table~\ref{tab:metrics}) and we hypothesize that it is either due to insufficient regularization or due to low amount of training data.
+We obtain significantly worse results (Table~\ref{tab:metrics}) and we hypothesize that it is due to insufficient regularization and low amount of training data.
 
 \begin{figure}[ht]
     \centering
