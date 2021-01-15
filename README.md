@@ -18,22 +18,28 @@ tensorflow==2.3.1
 
 Additionally, folder `data` must contain [AWE dataset](http://awe.fri.uni-lj.si/downloads/AWEDataset.zip) unzipped so that e.g. `data/001/01.png` is a valid path.
 
-## Training
+## Loading and training
 
 Script `train.py` can be run as-is.
-It will download EfficientNet-B0 weights and train our CNN model without image augmentations.
-To enable image augmentations, change variables near top of the file to contain:
+It will download EfficientNet-B0 weights and load saved weights of our CNN model trained without image augmentations.
+To switch to model with image augmentations, change parameters near top of the file to contain:
 
 ```py
 EXP_ID = "model-b"
 AUGMENTATIONS = True
 ```
 
+To enable model training, change parameters to:
+
+```py
+TRAIN = True
+```
+
 ## Evaluation
 
-Results needed to evaluate models trained without and with image augmentations are provided in folders `out/model-a` and `out/model-b`, respectively.
-To evaluate these two models, run script `evaluate.py`.
-Results will be printed to console and figures saved to folder `figures`.
+Script `evaluate.py` plots figures (to folder `figures`) and prints performance metrics to console.
+It uses state of models provided in folder `out`.
+This state can be recomputed by executing script `train.py` (once with augmentations and once without them) as described in previous section.
 
 ## Report
 
