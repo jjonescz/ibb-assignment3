@@ -103,7 +103,7 @@ Performance of the CNN is evaluated using rank-1 and rank-5 recognition rates, c
 
 We train two models---one on the original training dataset (Model A) and another on augmented images as described in Section~\ref{sec:meth} (Model B).
 Both models are trained with Adam optimizer using learning rate $10^{-3}$ for first 35 epochs and decreased to $10^{-4}$ for next 35 epochs.
-We have used accuracy on validation set (Figure~\ref{fig:acc}) to determine hyperparameters and architecture of the CNN.
+We have used accuracy on validation set during training (Figure~\ref{fig:acc}) to determine hyperparameters and architecture of the CNN.
 
 \begin{figure}[ht]
     \centering
@@ -113,9 +113,12 @@ We have used accuracy on validation set (Figure~\ref{fig:acc}) to determine hype
     \label{fig:acc}
 \end{figure}
 
-CMC curve of Model A is slightly worse than that of Model B (Figure~\ref{fig:cmc}).
+CMC curve of Model B is worse for most ranks than that of Model A (Figure~\ref{fig:cmc}).
 Accuracy of Model A is significantly better than that of Model B (Table~\ref{tab:metrics}).
 These results tell us that image augmentations are not enough to make the CNN generalize well, most likely due to low amount of training data.
+
+From accuracy on validation data observed during training (Figure~\ref{fig:acc}), we expect to get around 60~\% accuracy on unseen test set.
+We obtain significantly worse results (Table~\ref{tab:metrics}) and we hypothesize that it is either due to insufficient regularization or due to low amount of training data.
 
 \begin{figure}[ht]
     \centering
@@ -138,9 +141,11 @@ These results tell us that image augmentations are not enough to make the CNN ge
 
 \section{Conclusion}
 
-We have trained and analyzed a CNN-based ear recognition system.
-From accuracy on validation data observed during training, we expected to get around 60~\% accuracy on unseen test set.
-We obtained significantly worse results and we concluded that the amount of training data was too low for a deep neural network.
+We trained and analyzed a CNN-based ear recognition system using transfer learning.
+We also experimented with image augmentations although we did not achieve the desired generalization effect with them.
+
+Our model did not perform on unseen test data as well as expected although we employed regularization techniques (dropout layers and image augmentations).
+We therefore conclude that either different regularization techniques or larger and more diverse training dataset would be needed to obtain better results.
 
 For a real-world authentication system, we would need to modify our CNN model for the open-set recognition problem.
 Future work could also focus on fine-tuning the pre-trained model and analyzing whether another model could be more suitable than EfficientNet.
