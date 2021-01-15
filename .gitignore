@@ -8,6 +8,7 @@
 !/out/model-*
 /out/model-*/*
 !/out/model-*/*.pkl
+!/out/model-*/*.tf.*
 
 # Python
 __pycache__/
