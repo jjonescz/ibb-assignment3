@@ -24,6 +24,7 @@ DROPOUT = 0.5
 EXP_ID = "model-a"  # subfolder inside `out/` with saved state
 AUGMENTATIONS = False
 VERBOSE = False
+TRAIN = False
 OUT_DIR = os.path.join("out", EXP_ID)
 
 # %%
@@ -141,44 +142,53 @@ cp_callback = tf.keras.callbacks.ModelCheckpoint(
 )
 
 # %%
-# Train.
-epochs = 0
-training = []
-for e, lr in zip(EPOCHS, LEARNING_RATES):
-    efficientnet.trainable = lr > 0
-    model.compile(
-        optimizer=tf.optimizers.Adam(abs(lr)),
-        loss=tf.losses.SparseCategoricalCrossentropy(),
-        metrics=[tf.metrics.SparseCategoricalAccuracy(name="accuracy")]
-    )
-    t = model.fit(
-        ds_train,
-        initial_epoch=epochs,
-        epochs=epochs + e,
-        validation_data=ds_val,
-        callbacks=[cp_callback]
-    )
-    training.append(t)
-    epochs += e
+# Train or load saved weights.
+if TRAIN:
+    epochs = 0
+    training = []
+    for e, lr in zip(EPOCHS, LEARNING_RATES):
+        efficientnet.trainable = lr > 0
+        model.compile(
+            optimizer=tf.optimizers.Adam(abs(lr)),
+            loss=tf.losses.SparseCategoricalCrossentropy(),
+            metrics=[tf.metrics.SparseCategoricalAccuracy(name="accuracy")]
+        )
+        t = model.fit(
+            ds_train,
+            initial_epoch=epochs,
+            epochs=epochs + e,
+            validation_data=ds_val,
+            callbacks=[cp_callback]
+        )
+        training.append(t)
+        epochs += e
+else:
+    model.load_weights(os.path.join(OUT_DIR, 'model.tf'))
 
 # %%
-# Get train history values.
-train_history = dict()
-for t in training:
-    for key, value in t.history.items():
-        if key in train_history:
-            train_history[key].extend(value)
-        else:
-            train_history[key] = value.copy()
+# Get (or load) train history values.
+if TRAIN:
+    train_history = dict()
+    for t in training:
+        for key, value in t.history.items():
+            if key in train_history:
+                train_history[key].extend(value)
+            else:
+                train_history[key] = value.copy()
+else:
+    with open(os.path.join(OUT_DIR, 'train_history.pkl'), 'rb') as f:
+        train_history = pickle.load(f)
 
 # %%
 # Save training history.
-with open(os.path.join(OUT_DIR, 'train_history.pkl'), 'wb') as f:
-    pickle.dump(train_history, f)
+if TRAIN:
+    with open(os.path.join(OUT_DIR, 'train_history.pkl'), 'wb') as f:
+        pickle.dump(train_history, f)
 
 # %%
 # Save model.
-model.save(os.path.join(OUT_DIR, 'model.h5'), include_optimizer=False)
+if TRAIN:
+    model.save_weights(os.path.join(OUT_DIR, 'model.tf'))
 
 # %%
 # Plot loss evolution during training.
